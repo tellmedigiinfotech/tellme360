@@ -15,6 +15,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.ArrowRight
+import compose.icons.feathericons.Bell
+import compose.icons.feathericons.Download
+import compose.icons.feathericons.Heart
+import compose.icons.feathericons.HelpCircle
+import compose.icons.feathericons.Clock
+import compose.icons.feathericons.Info
+import compose.icons.feathericons.LogOut
+import compose.icons.feathericons.Moon
+import compose.icons.feathericons.PlayCircle
+import compose.icons.feathericons.Settings
+import compose.icons.feathericons.User
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,54 +46,74 @@ fun AccountScreen(
     val menuItems = remember {
         listOf(
             AccountMenuItem(
-                icon = "👤",
+                icon = FeatherIcons.User,
                 title = "Profile",
                 subtitle = "Edit your profile information",
                 onClick = { /* Handle profile click */ }
             ),
             AccountMenuItem(
-                icon = "📥",
+                icon = FeatherIcons.Download,
                 title = "Downloads",
                 subtitle = "Manage your downloaded content",
                 onClick = { /* Handle downloads click */ }
             ),
             AccountMenuItem(
-                icon = "❤️",
+                icon = FeatherIcons.Heart,
                 title = "Favorites",
                 subtitle = "Your favorite videos and series",
                 onClick = { /* Handle favorites click */ }
             ),
             AccountMenuItem(
-                icon = "📜",
+                icon = FeatherIcons.Clock,
                 title = "Watch History",
                 subtitle = "Recently watched content",
                 onClick = { /* Handle history click */ }
             ),
             AccountMenuItem(
-                icon = "⚙️",
+                icon = FeatherIcons.Settings,
                 title = "Settings",
                 subtitle = "App preferences and configuration",
                 onClick = { /* Handle settings click */ }
             ),
             AccountMenuItem(
-                icon = "❓",
+                icon = FeatherIcons.HelpCircle,
                 title = "Help & Support",
                 subtitle = "Get help and contact support",
                 onClick = { /* Handle help click */ }
             ),
             AccountMenuItem(
-                icon = "ℹ️",
+                icon = FeatherIcons.Info,
                 title = "About",
                 subtitle = "App version and information",
                 onClick = { /* Handle about click */ }
             )
         )
     }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .windowInsetsPadding(WindowInsets.safeDrawing),
+        topBar = {
+            LargeTopAppBar(
+                title = { Text("Account", style = MaterialTheme.typography.displayLarge) },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp)
+        ) {
         item {
             // Profile section
             Card(
@@ -94,10 +132,7 @@ fun AccountScreen(
                             .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "👤",
-                            style = MaterialTheme.typography.headlineLarge
-                        )
+                        Icon(imageVector = FeatherIcons.User, contentDescription = null)
                     }
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -122,17 +157,17 @@ fun AccountScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         StatItem(
-                            icon = "▶️",
+                            icon = FeatherIcons.PlayCircle,
                             value = "156",
                             label = "Videos Watched"
                         )
                         StatItem(
-                            icon = "❤️",
+                            icon = FeatherIcons.Heart,
                             value = "23",
                             label = "Favorites"
                         )
                         StatItem(
-                            icon = "📥",
+                            icon = FeatherIcons.Download,
                             value = "8",
                             label = "Downloads"
                         )
@@ -168,10 +203,7 @@ fun AccountScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(
-                                text = "🌙",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Icon(imageVector = FeatherIcons.Moon, contentDescription = null)
                             Text("Dark Mode")
                         }
                         Switch(
@@ -191,10 +223,7 @@ fun AccountScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(
-                                text = "🔔",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Icon(imageVector = FeatherIcons.Bell, contentDescription = null)
                             Text("Notifications")
                         }
                         Switch(
@@ -214,10 +243,7 @@ fun AccountScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(
-                                text = "▶️",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Icon(imageVector = FeatherIcons.PlayCircle, contentDescription = null)
                             Text("Auto Play")
                         }
                         Switch(
@@ -239,7 +265,6 @@ fun AccountScreen(
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
-        
         // Menu items
         items(menuItems) { menuItem ->
             MenuItemCard(
@@ -259,27 +284,25 @@ fun AccountScreen(
                     contentColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("🚪")
+                Icon(imageVector = FeatherIcons.LogOut, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Logout")
             }
+        }
         }
     }
 }
 
 @Composable
 fun StatItem(
-    icon: String,
+    icon: ImageVector,
     value: String,
     label: String
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = icon,
-            style = MaterialTheme.typography.titleLarge
-        )
+        Icon(imageVector = icon, contentDescription = null)
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
@@ -295,7 +318,7 @@ fun StatItem(
 }
 
 data class AccountMenuItem(
-    val icon: String,
+    val icon: ImageVector,
     val title: String,
     val subtitle: String,
     val onClick: () -> Unit
@@ -318,10 +341,7 @@ fun MenuItemCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = menuItem.icon,
-                style = MaterialTheme.typography.titleLarge
-            )
+            Icon(imageVector = menuItem.icon, contentDescription = null)
             
             Spacer(modifier = Modifier.width(16.dp))
             
@@ -340,11 +360,7 @@ fun MenuItemCard(
                 )
             }
             
-            Text(
-                text = "→",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Icon(imageVector = FeatherIcons.ArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

@@ -4,9 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import tellme.sairajpatil108.tellme360.navigation.AppNavigation
+import tellme.sairajpatil108.tellme360.navigation.Navigator
 import tellme.sairajpatil108.tellme360.navigation.Screen
+import tellme.sairajpatil108.tellme360.navigation.rememberNavigator
+import tellme.sairajpatil108.tellme360.navigation.AppNavHost
 import tellme.sairajpatil108.tellme360.presentation.screens.*
 import tellme.sairajpatil108.tellme360.ui.theme.TellMe360Theme
 
@@ -21,21 +25,20 @@ fun App() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TellMe360App() {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
-    var seriesId by remember { mutableStateOf<String?>(null) }
+    val navigator = rememberNavigator()
+    val layoutDirection = LocalLayoutDirection.current
     
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             NavigationBar {
                 AppNavigation.bottomNavItems.forEach { screen ->
+                    val selected = navigator.currentBottomRoot() == screen
                     NavigationBarItem(
-                        icon = { Text(screen.title.first().toString()) },
+                        icon = { screen.icon?.let { Icon(it, contentDescription = screen.title) } },
                         label = { Text(screen.title) },
-                        selected = currentScreen == screen,
-                        onClick = {
-                            currentScreen = screen
-                            seriesId = null
-                        }
+                        selected = selected,
+                        onClick = { navigator.navigateRoot(screen) }
                     )
                 }
             }
@@ -46,33 +49,7 @@ fun TellMe360App() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (currentScreen) {
-                Screen.Home -> HomeScreen(
-                    onNavigateToSeries = { id ->
-                        seriesId = id
-                        currentScreen = Screen.Series
-                    }
-                )
-                Screen.VRVideos -> VRVideosScreen()
-                Screen.Series -> {
-                    if (seriesId != null) {
-                        SeriesDetailScreen(
-                            seriesId = seriesId!!,
-                            onBackPressed = {
-                                seriesId = null
-                                currentScreen = Screen.Series
-                            }
-                        )
-                    } else {
-                        SeriesScreen(
-                            onNavigateToSeriesDetail = { id ->
-                                seriesId = id
-                            }
-                        )
-                    }
-                }
-                Screen.Account -> AccountScreen()
-            }
+            AppNavHost(navigator)
         }
     }
 }

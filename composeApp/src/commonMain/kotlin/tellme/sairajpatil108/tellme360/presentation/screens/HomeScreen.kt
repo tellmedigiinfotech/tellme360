@@ -21,6 +21,11 @@ import tellme.sairajpatil108.tellme360.data.model.VideoContent
 import tellme.sairajpatil108.tellme360.data.model.Series
 import tellme.sairajpatil108.tellme360.data.model.ContentCategory
 import tellme.sairajpatil108.tellme360.platform.rememberVRVideoPlayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Grid
+import compose.icons.feathericons.Play
+import compose.icons.feathericons.Tv
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,18 +104,33 @@ fun HomeScreen(
         )
     }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Welcome to TellMe360", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleLarge) },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp)
+        ) {
         item {
             // Header
-            Text(
-                text = "Welcome to TellMe360",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Spacer(modifier = Modifier.height(4.dp))
         }
         
         item {
@@ -149,10 +169,7 @@ fun HomeScreen(
                     VideoCard(
                         video = video,
                         onClick = {
-                            // Launch VR video player for VR videos
-                            if (video.isVR) {
-                                vrVideoPlayer.playVideo(video.videoUrl, video.title)
-                            }
+                            vrVideoPlayer.playVideo(video.videoUrl, video.title)
                         }
                     )
                 }
@@ -176,10 +193,7 @@ fun HomeScreen(
                     VideoCard(
                         video = video,
                         onClick = {
-                            // Launch VR video player for VR videos
-                            if (video.isVR) {
-                                vrVideoPlayer.playVideo(video.videoUrl, video.title)
-                            }
+                            vrVideoPlayer.playVideo(video.videoUrl, video.title)
                         }
                     )
                 }
@@ -207,6 +221,7 @@ fun HomeScreen(
                 }
             }
         }
+        }
     }
 }
 
@@ -228,10 +243,7 @@ fun CategoryCard(category: ContentCategory) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "📁",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Icon(imageVector = FeatherIcons.Grid, contentDescription = null)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = category.name,
@@ -266,10 +278,7 @@ fun VideoCard(video: VideoContent, onClick: () -> Unit) {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "▶️",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Icon(imageVector = FeatherIcons.Play, contentDescription = null)
             }
             
             // Video info overlay
@@ -301,12 +310,12 @@ fun VideoCard(video: VideoContent, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(4.dp)
                 ) {
-                    Text(
-                        text = "VR",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                    )
+                Text(
+                    text = "VR",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                )
                 }
             }
         }
@@ -334,10 +343,7 @@ fun SeriesCard(series: Series, onClick: () -> Unit) {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "📺",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Icon(imageVector = FeatherIcons.Tv, contentDescription = null)
             }
             
             // Series info overlay

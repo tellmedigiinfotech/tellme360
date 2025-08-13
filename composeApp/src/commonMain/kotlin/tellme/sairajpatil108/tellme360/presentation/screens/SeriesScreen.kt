@@ -16,6 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tellme.sairajpatil108.tellme360.data.model.Series
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Star
+import compose.icons.feathericons.Tv
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,54 +91,67 @@ fun SeriesScreen(
         matchesSearch && matchesCategory
     }
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        // Header
-        TopAppBar(
-            title = { Text("Series") },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Series", style = MaterialTheme.typography.titleLarge) },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
             )
-        )
-        
-        // Search bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            placeholder = { Text("Search series...") },
-            leadingIcon = { Text("🔍") },
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-        )
-        
-        // Category filters
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            items(categories) { category ->
-                FilterChip(
-                    selected = selectedCategory == category,
-                    onClick = { selectedCategory = category },
-                    label = { Text(category) }
-                )
+            // Search bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text("Search series...") },
+                leadingIcon = { Text("🔍") },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Category filters
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categories) { category ->
+                    FilterChip(
+                        selected = selectedCategory == category,
+                        onClick = { selectedCategory = category },
+                        label = { Text(category) }
+                    )
+                }
             }
-        }
-        
-        // Series list
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(filteredSeries) { series ->
-                SeriesListItem(
-                    series = series,
-                    onClick = { onNavigateToSeriesDetail(series.id) }
-                )
+
+            // Series list
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(filteredSeries) { series ->
+                    SeriesListItem(
+                        series = series,
+                        onClick = { onNavigateToSeriesDetail(series.id) }
+                    )
+                }
             }
         }
     }
@@ -160,10 +177,7 @@ fun SeriesListItem(series: Series, onClick: () -> Unit) {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "📺",
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                Icon(imageVector = FeatherIcons.Tv, contentDescription = null)
             }
             
             // Series info
@@ -200,10 +214,7 @@ fun SeriesListItem(series: Series, onClick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = "⭐",
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        Icon(imageVector = FeatherIcons.Star, contentDescription = null)
                         Text(
                             text = series.rating.toString(),
                             style = MaterialTheme.typography.bodySmall
@@ -214,10 +225,7 @@ fun SeriesListItem(series: Series, onClick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = "📺",
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        Icon(imageVector = FeatherIcons.Tv, contentDescription = null)
                         Text(
                             text = "${series.episodeCount} episodes",
                             style = MaterialTheme.typography.bodySmall,

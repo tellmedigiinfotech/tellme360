@@ -1,12 +1,18 @@
 package tellme.sairajpatil108.tellme360.navigation
 
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Home
+import compose.icons.feathericons.Bookmark
+import compose.icons.feathericons.User
+import compose.icons.feathericons.Camera
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
-    object Home : Screen("home", "Home", null)
-    object VRVideos : Screen("vr_videos", "VR Videos", null)
-    object Series : Screen("series", "Series", null)
-    object Account : Screen("account", "Account", null)
+    object Home : Screen("home", "Home", FeatherIcons.Home)
+    object VRVideos : Screen("vr_videos", "VR Videos", FeatherIcons.Camera)
+    object Series : Screen("series", "Series", FeatherIcons.Bookmark)
+    object Account : Screen("account", "Account", FeatherIcons.User)
+    data class SeriesDetail(val seriesId: String) : Screen("series_detail/$seriesId", "Series Detail", null)
     
     companion object {
         fun fromRoute(route: String?): Screen {

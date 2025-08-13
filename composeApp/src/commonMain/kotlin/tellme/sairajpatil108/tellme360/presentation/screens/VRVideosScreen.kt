@@ -12,11 +12,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tellme.sairajpatil108.tellme360.data.model.VideoContent
 import tellme.sairajpatil108.tellme360.platform.rememberVRVideoPlayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Play
+import compose.icons.feathericons.Star
+import compose.icons.feathericons.Eye
+import compose.icons.feathericons.Search
+import compose.icons.feathericons.X
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import tellme.sairajpatil108.tellme360.presentation.components.CommonAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +38,7 @@ fun VRVideosScreen(
     val vrVideoPlayer = rememberVRVideoPlayer()
     var selectedFilter by remember { mutableStateOf("All") }
     
-    val filters = remember {
+     val filters = remember {
         listOf("All", "Gaming", "Education", "Entertainment", "Travel", "Sports")
     }
     
@@ -100,46 +112,102 @@ fun VRVideosScreen(
     } else {
         vrVideos.filter { it.category == selectedFilter }
     }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        // Header
-        TopAppBar(
-            title = { Text("VR Videos") },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
-        )
-        
-        // Filter chips
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(filters) { filter ->
-                FilterChip(
-                    selected = selectedFilter == filter,
-                    onClick = { selectedFilter = filter },
-                    label = { Text(filter) }
-                )
-            }
-        }
-        
-        // Videos grid
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CommonAppBar(title = "360° Stories")
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         LazyColumn(
-            contentPadding = PaddingValues(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(filteredVideos) { video ->
-                VRVideoCard(
-                    video = video,
-                    onClick = {
-                        // Launch VR video player activity
-                        vrVideoPlayer.playVideo(video.videoUrl, video.title)
+            item {
+                // Search bar
+
+                    var searchQuery by remember { mutableStateOf("") }
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        placeholder = { Text("Search 360° stories...") },
+                        leadingIcon = { Icon(FeatherIcons.Search, contentDescription = null) },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(FeatherIcons.X, contentDescription = "Clear")
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                }
+
+            item {
+                // Categories row
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    items(filters) { filter ->
+                        FilterChip(
+                            selected = selectedFilter == filter,
+                            onClick = { selectedFilter = filter },
+                            label = { Text(filter) }
+                        )
                     }
-                )
+                }
             }
+            item {
+                // Results count placeholder to mirror old UI
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${filteredVideos.size} stories found",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            item {
+                // 2-column grid like old app; disable inner scroll and provide height
+                val rows = (filteredVideos.size + 1) / 2
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((rows * 200).dp)
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    userScrollEnabled = false
+                ) {
+                    items(filteredVideos) { video ->
+                        VideoGridCard(video) {
+                            vrVideoPlayer.playVideo(video.videoUrl, video.title)
+                        }
+                    }
+                }
+            }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 }
@@ -149,7 +217,7 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(220.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -163,12 +231,26 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "▶️",
-                    style = MaterialTheme.typography.headlineLarge
+                Icon(
+                    imageVector = FeatherIcons.Play,
+                    contentDescription = null,
+                    tint = Color.White
                 )
             }
             
+            // Gradient overlay for legibility
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color(0xCC000000)),
+                            startY = 0f,
+                            endY = Float.POSITIVE_INFINITY
+                        )
+                    )
+            )
+
             // VR badge
             Surface(
                 modifier = Modifier
@@ -205,11 +287,11 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(12.dp)
+                    .padding(16.dp)
             ) {
                 Text(
                     text = video.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
@@ -236,9 +318,10 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = "⭐",
-                            style = MaterialTheme.typography.bodySmall
+                        Icon(
+                            imageVector = FeatherIcons.Star,
+                            contentDescription = null,
+                            tint = Color.White
                         )
                         Text(
                             text = video.rating.toString(),
@@ -251,9 +334,10 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = "👁️",
-                            style = MaterialTheme.typography.bodySmall
+                        Icon(
+                            imageVector = FeatherIcons.Eye,
+                            contentDescription = null,
+                            tint = Color.White
                         )
                         Text(
                             text = "${video.views / 1000}k",
@@ -274,6 +358,60 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun VideoGridCard(video: VideoContent, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Placeholder for thumbnail (remove Coil to keep commonMain dependency-free)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Text(
+                    text = video.title,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = video.duration,
+                    color = Color.White.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }

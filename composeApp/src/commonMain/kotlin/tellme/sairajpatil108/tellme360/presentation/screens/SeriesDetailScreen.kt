@@ -6,16 +6,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.ArrowLeft
+import compose.icons.feathericons.Download
+import compose.icons.feathericons.Play
+import compose.icons.feathericons.Share2
+import compose.icons.feathericons.Star
+import compose.icons.feathericons.Tv
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tellme.sairajpatil108.tellme360.data.model.Series
 import tellme.sairajpatil108.tellme360.data.model.VideoContent
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material.icons.filled.StarOutline
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,9 +98,34 @@ fun SeriesDetailScreen(
         )
     }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize()
-    ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(series.title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleLarge) },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(imageVector = FeatherIcons.ArrowLeft, contentDescription = "Back")
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
         item {
             // Series header
             Box(
@@ -102,25 +139,24 @@ fun SeriesDetailScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "📺",
-                        style = MaterialTheme.typography.displayMedium
-                    )
+                    Icon(imageVector = FeatherIcons.Tv, contentDescription = null)
                 }
+
+                // Gradient overlay
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color(0xB3000000)),
+                                startY = 0f,
+                                endY = Float.POSITIVE_INFINITY
+                            )
+                        )
+                )
                 
                 // Back button
-                IconButton(
-                    onClick = onBackPressed,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "←",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
-                }
+                // Moved to top bar navigation icon
                 
                 // Play button
                 FloatingActionButton(
@@ -129,10 +165,7 @@ fun SeriesDetailScreen(
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = "▶️",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    Icon(imageVector = FeatherIcons.Play, contentDescription = "Play")
                 }
             }
         }
@@ -158,10 +191,7 @@ fun SeriesDetailScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = "⭐",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Icon(imageVector = FeatherIcons.Star, contentDescription = null)
                         Text(
                             text = series.rating.toString(),
                             style = MaterialTheme.typography.bodyMedium
@@ -172,10 +202,7 @@ fun SeriesDetailScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = "📺",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Icon(imageVector = FeatherIcons.Tv, contentDescription = null)
                         Text(
                             text = "${series.episodeCount} episodes",
                             style = MaterialTheme.typography.bodyMedium,
@@ -214,7 +241,7 @@ fun SeriesDetailScreen(
                         onClick = { /* Handle download */ },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("📥")
+                        Icon(imageVector = FeatherIcons.Download, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Download")
                     }
@@ -223,7 +250,7 @@ fun SeriesDetailScreen(
                         onClick = { /* Handle share */ },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("📤")
+                        Icon(imageVector = FeatherIcons.Share2, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Share")
                     }
@@ -248,6 +275,7 @@ fun SeriesDetailScreen(
                 onClick = { /* Handle episode click */ },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
+        }
         }
     }
 }
@@ -276,10 +304,7 @@ fun EpisodeCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "▶️",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = null)
             }
             
             // Episode info
