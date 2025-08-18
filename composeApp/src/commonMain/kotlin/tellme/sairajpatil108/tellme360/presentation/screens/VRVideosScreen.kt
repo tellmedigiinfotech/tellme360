@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tellme.sairajpatil108.tellme360.data.model.VideoContent
-import tellme.sairajpatil108.tellme360.platform.rememberVRVideoPlayer
+
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Play
@@ -25,17 +25,22 @@ import compose.icons.feathericons.Star
 import compose.icons.feathericons.Eye
 import compose.icons.feathericons.Search
 import compose.icons.feathericons.X
+import compose.icons.feathericons.Download
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import tellme.sairajpatil108.tellme360.presentation.components.CommonAppBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VRVideosScreen(
+    onNavigateToVideoDetail: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val vrVideoPlayer = rememberVRVideoPlayer()
+
     var selectedFilter by remember { mutableStateOf("All") }
     
      val filters = remember {
@@ -202,7 +207,7 @@ fun VRVideosScreen(
                 ) {
                     items(filteredVideos) { video ->
                         VideoGridCard(video) {
-                            vrVideoPlayer.playVideo(video.videoUrl, video.title)
+                            onNavigateToVideoDetail(video.id)
                         }
                     }
                 }
@@ -365,6 +370,12 @@ fun VRVideoCard(video: VideoContent, onClick: () -> Unit) {
 
 @Composable
 fun VideoGridCard(video: VideoContent, onClick: () -> Unit) {
+    var showDownloadDialog by remember { mutableStateOf(false) }
+    var downloadProgress by remember { mutableStateOf(0f) }
+    var isDownloading by remember { mutableStateOf(false) }
+    var downloadStatus by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -393,6 +404,20 @@ fun VideoGridCard(video: VideoContent, onClick: () -> Unit) {
                     )
             )
 
+            // Download button overlay
+            IconButton(
+                onClick = { showDownloadDialog = true },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    imageVector = FeatherIcons.Download,
+                    contentDescription = "Download",
+                    tint = Color.White
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -410,9 +435,89 @@ fun VideoGridCard(video: VideoContent, onClick: () -> Unit) {
                 Text(
                     text = video.duration,
                     color = Color.White.copy(alpha = 0.8f),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
+    }
+    
+    // Download confirmation dialog
+    if (showDownloadDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                if (!isDownloading) showDownloadDialog = false 
+            },
+            title = { Text("Download Video") },
+            text = { 
+                if (isDownloading) {
+                    Column {
+                        Text("Downloading 360° video...")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LinearProgressIndicator(
+                            progress = downloadProgress,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(
+                            text = "${(downloadProgress * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        if (downloadStatus.isNotEmpty()) {
+                            Text(
+                                text = downloadStatus,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                } else {
+                    Text("Would you like to download this 360° video for offline viewing?")
+                }
+            },
+            confirmButton = {
+                if (isDownloading) {
+                    TextButton(
+                        onClick = { /* Download in progress, can't cancel for now */ }
+                    ) {
+                        Text("Downloading...")
+                    }
+                } else {
+                    TextButton(
+                        onClick = {
+                            isDownloading = true
+                            downloadProgress = 0f
+                            downloadStatus = "Starting download..."
+                            
+                            // Simulate download progress
+                            // In a real app, this would be implemented using platform-specific download managers
+                            coroutineScope.launch {
+                                repeat(100) { progress ->
+                                    delay(50)
+                                    downloadProgress = progress / 100f
+                                    downloadStatus = when {
+                                        progress < 30 -> "Connecting to server..."
+                                        progress < 70 -> "Downloading video data..."
+                                        progress < 90 -> "Processing video..."
+                                        else -> "Finalizing download..."
+                                    }
+                                }
+                                downloadStatus = "Download completed!"
+                                delay(1000)
+                                isDownloading = false
+                                showDownloadDialog = false
+                            }
+                        }
+                    ) {
+                        Text("Download")
+                    }
+                }
+            },
+            dismissButton = {
+                if (!isDownloading) {
+                    TextButton(onClick = { showDownloadDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
     }
 }

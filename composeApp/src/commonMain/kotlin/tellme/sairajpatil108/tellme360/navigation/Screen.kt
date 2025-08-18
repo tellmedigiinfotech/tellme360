@@ -13,6 +13,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object Series : Screen("series", "Series", FeatherIcons.Bookmark)
     object Account : Screen("account", "Account", FeatherIcons.User)
     data class SeriesDetail(val seriesId: String) : Screen("series_detail/$seriesId", "Series Detail", null)
+    data class VideoDetail(val videoId: String) : Screen("video_detail/$videoId", "Video Detail", null)
     
     companion object {
         fun fromRoute(route: String?): Screen {
@@ -33,6 +34,7 @@ object AppNavigation {
     const val VR_VIDEOS_ROUTE = "vr_videos"
     const val SERIES_ROUTE = "series"
     const val SERIES_DETAIL_ROUTE = "series_detail/{seriesId}"
+    const val VIDEO_DETAIL_ROUTE = "video_detail/{videoId}"
     const val ACCOUNT_ROUTE = "account"
     
     val bottomNavItems = listOf(

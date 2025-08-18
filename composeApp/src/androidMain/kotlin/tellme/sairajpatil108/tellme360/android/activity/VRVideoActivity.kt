@@ -64,14 +64,76 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.livedata.observeAsState
 import tellme.sairajpatil108.tellme360.android.renderer.GL360Renderer
+import android.app.DownloadManager
+import android.content.Intent
+import android.os.Environment
+import android.webkit.URLUtil
+import java.io.File
+
+// Download Manager for handling video downloads
+class VideoDownloadManager(private val context: Context) {
+    
+    fun downloadVideo(videoUrl: String, videoTitle: String, onProgress: (Float) -> Unit, onComplete: (String) -> Unit, onError: (String) -> Unit) {
+        try {
+            // Create download request
+            val request = DownloadManager.Request(Uri.parse(videoUrl)).apply {
+                setTitle(videoTitle)
+                setDescription("Downloading 360° video")
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${videoTitle.replace(" ", "_")}.mp4")
+                setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                setAllowedOverRoaming(false)
+            }
+            
+            // Get download service and enqueue download
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val downloadId = downloadManager.enqueue(request)
+            
+            // Monitor download progress
+            Thread {
+                var downloading = true
+                while (downloading) {
+                    val query = DownloadManager.Query().setFilterById(downloadId)
+                    val cursor = downloadManager.query(query)
+                    
+                    if (cursor.moveToFirst()) {
+                        val bytesDownloaded = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                        val bytesTotal = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                        val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                        
+                        when (status) {
+                            DownloadManager.STATUS_RUNNING -> {
+                                if (bytesTotal > 0) {
+                                    val progress = bytesDownloaded.toFloat() / bytesTotal.toFloat()
+                                    onProgress(progress)
+                                }
+                            }
+                            DownloadManager.STATUS_SUCCESSFUL -> {
+                                val uri = downloadManager.getUriForDownloadedFile(downloadId)
+                                downloading = false
+                                onComplete(uri?.toString() ?: "Download completed")
+                            }
+                            DownloadManager.STATUS_FAILED -> {
+                                downloading = false
+                                onError("Download failed")
+                            }
+                        }
+                    }
+                    cursor.close()
+                    Thread.sleep(1000) // Check every second
+                }
+            }.start()
+            
+        } catch (e: Exception) {
+            onError("Download error: ${e.message}")
+        }
+    }
+}
 
 @UnstableApi
 class VRVideoActivity : ComponentActivity() {
@@ -79,6 +141,7 @@ class VRVideoActivity : ComponentActivity() {
     private lateinit var glSurfaceView: GLSurfaceView
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var viewModel: VRVideoViewModel
+    private lateinit var downloadManager: VideoDownloadManager
     
     companion object {
         private const val TAG = "VRVideoActivity"
@@ -105,6 +168,9 @@ class VRVideoActivity : ComponentActivity() {
         
         try {
             Log.d(TAG, "Starting VR Video Activity")
+            
+            // Initialize download manager
+            downloadManager = VideoDownloadManager(this)
             
             // Keep screen on and hide system UI for immersive VR experience
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -238,6 +304,28 @@ class VRVideoActivity : ComponentActivity() {
             Toast.makeText(this, "Error initializing VR player: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
         }
+    }
+    
+    // Function to download video (can be called from Compose)
+    fun downloadVideo(videoUrl: String, videoTitle: String) {
+        downloadManager.downloadVideo(
+            videoUrl = videoUrl,
+            videoTitle = videoTitle,
+            onProgress = { progress ->
+                // Update progress in UI
+                Log.d(TAG, "Download progress: ${(progress * 100).toInt()}%")
+            },
+            onComplete = { result ->
+                runOnUiThread {
+                    Toast.makeText(this, "Download completed: $result", Toast.LENGTH_LONG).show()
+                }
+            },
+            onError = { error ->
+                runOnUiThread {
+                    Toast.makeText(this, "Download failed: $error", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
     }
     
     private fun addUIOverlays() {
