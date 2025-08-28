@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("com.google.gms.google-services")
 }
 
 kotlin {
@@ -32,6 +33,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            
+            // Firebase dependencies (Android only) - Latest versions
+            implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
+            implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+            implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
+            implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
             
             // ExoPlayer for VR video playback
             implementation("androidx.media3:media3-exoplayer:1.3.1")
@@ -68,7 +75,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "tellme.sairajpatil108.tellme360"
+        applicationId = "com.tellme.tellme360"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

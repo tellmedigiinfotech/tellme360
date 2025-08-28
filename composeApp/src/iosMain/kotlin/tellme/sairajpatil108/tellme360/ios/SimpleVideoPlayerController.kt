@@ -28,7 +28,7 @@ class SimpleVideoPlayerController(
         view.backgroundColor = UIColor.blackColor
 
         // Use the specified 360° video URL
-        val videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg"
+        val videoUrl = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4"
         
         // Create AVPlayer
         val asset = AVURLAsset(uRL = NSURL(string = videoUrl)!!, options = null)

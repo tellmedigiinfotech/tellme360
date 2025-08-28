@@ -40,27 +40,15 @@ fun HomeScreen(
         listOf(
             VideoContent(
                 id = "1",
-                title = "Amazing VR Experience",
-                description = "Experience the future of entertainment",
+                title = "Sample VR Test Video",
+                description = "This is a sample 360-degree VR video for testing purposes. Experience immersive virtual reality content.",
                 thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "15:30",
-                category = "VR",
+                videoUrl = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4",
+                duration = "10:00",
+                category = "Test",
                 isVR = true,
-                rating = 4.5f,
-                views = 15000
-            ),
-            VideoContent(
-                id = "2",
-                title = "Virtual Reality Gaming",
-                description = "Immerse yourself in virtual worlds",
-                thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "22:15",
-                category = "Gaming",
-                isVR = true,
-                rating = 4.8f,
-                views = 25000
+                rating = 5.0f,
+                views = 1000
             )
         )
     }
@@ -77,15 +65,15 @@ fun HomeScreen(
     val recentVideos = remember {
         listOf(
             VideoContent(
-                id = "3",
-                title = "VR Tutorial for Beginners",
-                description = "Learn the basics of VR",
+                id = "1",
+                title = "Sample VR Test Video",
+                description = "This is a sample 360-degree VR video for testing purposes. Experience immersive virtual reality content.",
                 thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "8:45",
-                category = "Tutorial",
-                rating = 4.2f,
-                views = 8500
+                videoUrl = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4",
+                duration = "10:00",
+                category = "Test",
+                rating = 5.0f,
+                views = 1000
             )
         )
     }

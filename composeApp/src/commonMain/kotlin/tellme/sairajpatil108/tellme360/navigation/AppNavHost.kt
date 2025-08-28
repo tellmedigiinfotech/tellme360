@@ -28,51 +28,15 @@ fun AppNavHost(navigator: Navigator) {
                 val vrVideos = listOf(
                     VideoContent(
                         id = "1",
-                        title = "VR Gaming Experience",
-                        description = "Immerse yourself in the world of virtual reality gaming with this incredible 360-degree experience. Feel like you're actually inside the game world as you explore vast landscapes and engage in epic battles.",
+                        title = "Sample VR Test Video",
+                        description = "This is a sample 360-degree VR video for testing purposes. Experience immersive virtual reality content.",
                         thumbnailUrl = "",
-                        videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                        duration = "25:30",
-                        category = "Gaming",
+                        videoUrl = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4",
+                        duration = "10:00",
+                        category = "Test",
                         isVR = true,
-                        rating = 4.8f,
-                        views = 35000
-                    ),
-                    VideoContent(
-                        id = "2",
-                        title = "Virtual Travel: Paris",
-                        description = "Take a virtual journey through the beautiful streets of Paris. Experience the Eiffel Tower, Louvre Museum, and charming cafes as if you were really there.",
-                        thumbnailUrl = "",
-                        videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                        duration = "18:45",
-                        category = "Travel",
-                        isVR = true,
-                        rating = 4.6f,
-                        views = 22000
-                    ),
-                    VideoContent(
-                        id = "3",
-                        title = "VR Education: Solar System",
-                        description = "Learn about planets, stars, and galaxies in this immersive educational experience. Perfect for students and space enthusiasts alike.",
-                        thumbnailUrl = "",
-                        videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                        duration = "32:15",
-                        category = "Education",
-                        isVR = true,
-                        rating = 4.9f,
-                        views = 28000
-                    ),
-                    VideoContent(
-                        id = "4",
-                        title = "VR Sports: Basketball",
-                        description = "Experience basketball like never before in VR. Feel the energy of the court and the excitement of the game from unique perspectives.",
-                        thumbnailUrl = "",
-                        videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                        duration = "15:20",
-                        category = "Sports",
-                        isVR = true,
-                        rating = 4.4f,
-                        views = 18000
+                        rating = 5.0f,
+                        views = 1000
                     )
                 )
                 val video = vrVideos.find { it.id == screen.videoId } ?: vrVideos.first()

@@ -44,70 +44,22 @@ fun VRVideosScreen(
     var selectedFilter by remember { mutableStateOf("All") }
     
      val filters = remember {
-        listOf("All", "Gaming", "Education", "Entertainment", "Travel", "Sports")
+        listOf("All", "Test")
     }
     
     val vrVideos = remember {
         listOf(
             VideoContent(
                 id = "1",
-                title = "VR Gaming Experience",
-                description = "Immerse yourself in the world of virtual reality gaming",
+                title = "Sample VR Test Video",
+                description = "This is a sample 360-degree VR video for testing purposes. Experience immersive virtual reality content.",
                 thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "25:30",
-                category = "Gaming",
+                videoUrl = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4",
+                duration = "10:00",
+                category = "Test",
                 isVR = true,
-                rating = 4.8f,
-                views = 35000
-            ),
-            VideoContent(
-                id = "2",
-                title = "Virtual Travel: Paris",
-                description = "Explore the beautiful city of Paris in VR",
-                thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "18:45",
-                category = "Travel",
-                isVR = true,
-                rating = 4.6f,
-                views = 22000
-            ),
-            VideoContent(
-                id = "3",
-                title = "VR Education: Solar System",
-                description = "Learn about planets in an immersive VR experience",
-                thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "32:15",
-                category = "Education",
-                isVR = true,
-                rating = 4.9f,
-                views = 28000
-            ),
-            VideoContent(
-                id = "4",
-                title = "VR Sports: Basketball",
-                description = "Experience basketball like never before in VR",
-                thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "15:20",
-                category = "Sports",
-                isVR = true,
-                rating = 4.4f,
-                views = 18000
-            ),
-            VideoContent(
-                id = "5",
-                title = "VR Entertainment: Concert",
-                description = "Attend a virtual concert from the front row",
-                thumbnailUrl = "",
-                videoUrl = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg",
-                duration = "45:30",
-                category = "Entertainment",
-                isVR = true,
-                rating = 4.7f,
-                views = 42000
+                rating = 5.0f,
+                views = 1000
             )
         )
     }

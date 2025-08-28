@@ -149,7 +149,7 @@ class VRVideoActivity : ComponentActivity() {
         const val VIDEO_TITLE_EXTRA = "video_title"
         
         // Sample 360° video URL
-        const val SAMPLE_360_VIDEO_URL = "https://drive.google.com/uc?export=download&id=10oyKIe1AlliTD4HdS1j8fDxNo-zlVAbg"
+        const val SAMPLE_360_VIDEO_URL = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4"
         
         fun start(context: Context, videoUrl: String, videoTitle: String) {
             val intent = android.content.Intent(context, VRVideoActivity::class.java).apply {

@@ -52,48 +52,15 @@ fun SeriesDetailScreen(
     val episodes = remember {
         listOf(
             VideoContent(
-                id = "ep1",
-                title = "Episode 1: The Beginning",
-                description = "Start your VR adventure with an introduction to virtual reality",
+                id = "1",
+                title = "Sample VR Test Video",
+                description = "This is a sample 360-degree VR video for testing purposes. Experience immersive virtual reality content.",
                 thumbnailUrl = "",
-                videoUrl = "",
-                duration = "15:30",
-                category = "Adventure",
-                rating = 4.5f,
-                views = 12000
-            ),
-            VideoContent(
-                id = "ep2",
-                title = "Episode 2: Mountain Climb",
-                description = "Scale the highest peaks in virtual reality",
-                thumbnailUrl = "",
-                videoUrl = "",
-                duration = "22:15",
-                category = "Adventure",
-                rating = 4.7f,
-                views = 15000
-            ),
-            VideoContent(
-                id = "ep3",
-                title = "Episode 3: Ocean Depths",
-                description = "Explore the mysterious depths of the ocean",
-                thumbnailUrl = "",
-                videoUrl = "",
-                duration = "18:45",
-                category = "Adventure",
-                rating = 4.6f,
-                views = 13500
-            ),
-            VideoContent(
-                id = "ep4",
-                title = "Episode 4: Space Journey",
-                description = "Travel through the cosmos in this epic space adventure",
-                thumbnailUrl = "",
-                videoUrl = "",
-                duration = "25:20",
-                category = "Adventure",
-                rating = 4.8f,
-                views = 18000
+                videoUrl = "https://tellme360.media/videos/2025-07-30/14-29-48-615460/mp4_files/1080p.mp4",
+                duration = "10:00",
+                category = "Test",
+                rating = 5.0f,
+                views = 1000
             )
         )
     }
