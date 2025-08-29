@@ -8,21 +8,16 @@ import androidx.compose.ui.unit.dp
 import tellme.sairajpatil108.tellme360.navigation.AppNavigation
 import tellme.sairajpatil108.tellme360.navigation.Screen
 import tellme.sairajpatil108.tellme360.presentation.screens.*
+import tellme.sairajpatil108.tellme360.android.presentation.screens.HomeScreenAndroid
+import tellme.sairajpatil108.tellme360.android.presentation.screens.VRVideosScreenAndroid
 import tellme.sairajpatil108.tellme360.ui.theme.TellMe360Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
-    TellMe360Theme {
-        TellMe360App()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TellMe360App() {
+fun TellMe360AppAndroid() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
     var seriesId by remember { mutableStateOf<String?>(null) }
+
     
     Scaffold(
         bottomBar = {
@@ -47,13 +42,13 @@ fun TellMe360App() {
                 .padding(innerPadding)
         ) {
             when (currentScreen) {
-                Screen.Home -> HomeScreen(
+                Screen.Home -> HomeScreenAndroid(
                     onNavigateToSeries = { id ->
                         seriesId = id
                         currentScreen = Screen.Series
                     }
                 )
-                Screen.VRVideos -> VRVideosScreen()
+                Screen.VRVideos -> VRVideosScreenAndroid()
                 Screen.Series -> {
                     if (seriesId != null) {
                         SeriesDetailScreen(
